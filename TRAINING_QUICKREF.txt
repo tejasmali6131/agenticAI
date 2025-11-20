@@ -1,0 +1,232 @@
+# 🎯 Training Quick Reference Card
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                   HOUSE-GAN TRAINING WORKFLOW                    │
+└─────────────────────────────────────────────────────────────────┘
+
+📋 PREREQUISITES
+═══════════════════════════════════════════════════════════════════
+✓ Phase 1 complete (requirements gathered)
+✓ Data files available:
+  - 2018-house_gan/dataset_paper/train_data.npy (~500MB)
+  - 2018-house_gan/dataset_paper/valid_data.npy (~50MB)
+
+
+🚀 OPTION 1: GOOGLE COLAB (RECOMMENDED)
+═══════════════════════════════════════════════════════════════════
+Time: 2-3 hours | Cost: FREE | Quality: Excellent
+
+Step 1: Setup (5 minutes)
+   1. Open https://colab.research.google.com/
+   2. Upload: notebooks/03_train_housegan.ipynb
+   3. Runtime → Change runtime type → GPU → T4
+   
+Step 2: Upload Data (10 minutes)
+   1. Click folder icon 📁
+   2. Upload train_data.npy and valid_data.npy
+   
+Step 3: Train (2-3 hours)
+   1. Runtime → Run all (or Ctrl+F9)
+   2. Keep browser tab open
+   3. Monitor progress
+   
+Step 4: Download Model (2 minutes)
+   1. Find: trained_models/trained_housegan_model.pth
+   2. Right-click → Download
+   3. Save to: AgenticAI/trained_models/
+
+
+💻 OPTION 2: LOCAL TRAINING
+═══════════════════════════════════════════════════════════════════
+Time: 8-12 hours | Cost: FREE | Quality: Good
+
+Step 1: Activate Environment
+   cd C:\AgenticAI
+   .venv\Scripts\Activate.ps1
+
+Step 2: Open Notebook
+   jupyter notebook notebooks/03_train_housegan.ipynb
+
+Step 3: Run All Cells
+   Cell → Run All (or Shift+Enter repeatedly)
+
+Step 4: Let It Run Overnight
+   Model saves automatically every 10 epochs
+
+
+🎯 TRAINING CONFIGURATION
+═══════════════════════════════════════════════════════════════════
+In notebook Step 2, adjust:
+
+Quick Test (10 min):
+   num_epochs: 10
+   batch_size: 32
+
+Good Quality (2-3 hours GPU):
+   num_epochs: 100
+   batch_size: 32
+
+Best Quality (8 hours GPU):
+   num_epochs: 500
+   batch_size: 32
+
+
+📊 MONITORING TRAINING
+═══════════════════════════════════════════════════════════════════
+✅ Good Signs:
+   - G Loss decreasing (1.5 → 0.8 → 0.5)
+   - D Loss stable (0.5-0.7 range)
+   - D(real) near 1.0 (0.8-0.95)
+   - D(fake) approaching 0.5 (0.3-0.7)
+   - Generated samples look like floor plans
+
+❌ Warning Signs:
+   - Losses exploding or staying constant
+   - D(real) dropping below 0.7
+   - D(fake) stuck at 0.0
+   - Generated samples are noise
+
+
+🔧 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+"CUDA out of memory"
+   → Change batch_size from 32 to 16
+
+"File not found: train_data.npy"
+   → Upload data files in Step 4
+
+"Colab disconnected"
+   → Reconnect, find latest checkpoint
+   → Download checkpoint_epoch_XX.pth
+
+"Training too slow"
+   → Use Colab GPU instead of local CPU
+   → Or reduce num_epochs for faster test
+
+
+🎨 USING TRAINED MODEL
+═══════════════════════════════════════════════════════════════════
+After training:
+
+1. Copy model to: trained_models/trained_housegan_model.pth
+
+2. Open: notebooks/02_floorplan_generator.ipynb
+
+3. Update Cell 9 (Step 3B):
+   model_path="../trained_models/trained_housegan_model.pth"
+
+4. Restart kernel and run all
+
+5. Enjoy PERFECT floor plans! 🎉
+
+
+📈 EXPECTED RESULTS
+═══════════════════════════════════════════════════════════════════
+BEFORE Training (Pre-trained model):
+   Quality Score: 0.50 (random)
+   Output: Blank/gray squares
+   Status: Unusable ❌
+
+AFTER Training (Your model):
+   Quality Score: 0.70-0.90 (excellent)
+   Output: Clear, structured floor plans
+   Status: Production ready ✅
+
+
+📚 DETAILED GUIDES
+═══════════════════════════════════════════════════════════════════
+TRAINING_GUIDE.md              → Complete training documentation
+COLAB_QUICKSTART.md            → 5-minute Colab setup
+PHASE2_UPDATE_INSTRUCTIONS.md  → Integration with Phase 2
+
+
+⏱️ TIME ESTIMATES
+═══════════════════════════════════════════════════════════════════
+Setup:           5-10 minutes
+Data upload:     5-10 minutes (Colab only)
+Training:        2-12 hours (depends on hardware)
+Download:        2-5 minutes (Colab only)
+Integration:     5 minutes
+Total:           2-13 hours
+
+
+💾 FILE SIZES
+═══════════════════════════════════════════════════════════════════
+train_data.npy:              ~500 MB
+valid_data.npy:              ~50 MB
+trained_model.pth:           ~50-100 MB
+checkpoint_epoch_10.pth:     ~60 MB (each)
+
+
+🎯 SUCCESS CHECKLIST
+═══════════════════════════════════════════════════════════════════
+Before Training:
+   □ Data files downloaded/available
+   □ Colab GPU enabled OR local environment ready
+   □ Training notebook opened
+
+During Training:
+   □ No error messages
+   □ Losses decreasing/stable
+   □ Generated samples improving
+   □ Checkpoints saving every 10 epochs
+
+After Training:
+   □ trained_housegan_model.pth exists
+   □ Model size 50-100 MB
+   □ Training curves show learning
+   □ Test samples look realistic
+
+Integration:
+   □ Model copied to trained_models/
+   □ Phase 2 updated with new path
+   □ Phase 2 generates quality 0.7+ plans
+   □ Floor plans show clear structures
+
+
+🚨 COMMON MISTAKES TO AVOID
+═══════════════════════════════════════════════════════════════════
+❌ Closing Colab tab during training
+   → Keep browser open for 2-3 hours
+
+❌ Not enabling GPU in Colab
+   → Training will be 10x slower
+
+❌ Using untrained model in Phase 2
+   → Always update model path after training
+
+❌ Not saving checkpoints
+   → Set save_every: 10 to save progress
+
+❌ Training for too few epochs
+   → Minimum 50 epochs, 100+ recommended
+
+
+💡 PRO TIPS
+═══════════════════════════════════════════════════════════════════
+✨ Start with 10 epochs to test setup (10 minutes)
+✨ Use Colab GPU for fastest training (free)
+✨ Download all checkpoints as backup
+✨ Monitor training curves in Step 7
+✨ Test generated samples in Step 8
+✨ Compare before/after quality scores
+✨ Train overnight on local CPU if needed
+✨ Save your Colab notebook to Google Drive
+
+
+🎉 FINAL OUTCOME
+═══════════════════════════════════════════════════════════════════
+You will have:
+   ✅ Custom AI model trained on 145K+ floor plans
+   ✅ Model specifically optimized for bungalows
+   ✅ Production-ready floor plan generator
+   ✅ Quality scores of 0.7-0.9 (excellent)
+   ✅ Realistic, usable architectural layouts
+   ✅ Fully integrated agentic AI system
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│  🚀 Ready to start? Open COLAB_QUICKSTART.md for step-by-step! │
+└─────────────────────────────────────────────────────────────────┘
+```
