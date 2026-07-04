@@ -1,0 +1,284 @@
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{CJKutf8} 
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage[section]{placeins}
+\usepackage{xcolor}
+\usepackage{breakcites}
+\usepackage{lineno}
+\usepackage{hyphenat}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\@combinedblfloats{\box\@outputbox}{\unvbox\@outputbox}{}{%
+  \errmessage{\noexpand\@combinedblfloats could not be patched}%
+}%
+\makeatother
+
+
+\usepackage[round]{natbib}
+\let\cite\citep
+
+\renewenvironment{abstract}
+  {{\bfseries\noindent{\abstractname}\par\nobreak}\footnotesize}
+  {\bigskip}
+
+\titlespacing{\section}{0pt}{*3}{*1}
+\titlespacing{\subsection}{0pt}{*2}{*0.5}
+\titlespacing{\subsubsection}{0pt}{*1.5}{0pt}
+
+\usepackage{authblk}
+
+\usepackage{graphicx}
+\usepackage[space]{grffile}
+\usepackage{latexsym}
+\usepackage{textcomp}
+\usepackage{longtable}
+\usepackage{tabulary}
+\usepackage{booktabs,array,multirow}
+\usepackage{amsfonts,amsmath,amssymb}
+\providecommand\citet{\cite}
+\providecommand\citep{\cite}
+\providecommand\citealt{\cite}
+% You can conditionalize code for latexml or normal latex using this.
+\newif\iflatexml\latexmlfalse
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}%
+
+\AtBeginDocument{\DeclareGraphicsExtensions{.pdf,.PDF,.eps,.EPS,.png,.PNG,.tif,.TIF,.jpg,.JPG,.jpeg,.JPEG}}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{float}
+
+\begin{document}
+\begin{CJK}{UTF8}{gbsn}
+
+\title{SSRN Template}
+
+
+
+\author[1]{Josh Nicholson}%
+\affil[1]{Authorea}%
+
+
+\vspace{-1em}
+
+
+
+  
+  \date{January 08, 2026}
+
+
+\begingroup
+\let\center\flushleft
+\let\endcenter\endflushleft
+\maketitle
+\endgroup
+
+
+
+
+
+\selectlanguage{english}
+\begin{abstract}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+ultrices posuere sapien ut rutrum. Vivamus venenatis volutpat metus ut
+tempus. Nullam pretium diam tortor, eget rhoncus sapien laoreet in.
+Vivamus luctus tortor auctor turpis dapibus, tempor rhoncus magna
+auctor. Donec egestas orci eget ipsum placerat placerat. Aenean et
+dignissim ex. Aenean fermentum iaculis diam, eget mattis elit cursus ac.
+Suspendisse gravida, sem ac volutpat mattis, justo purus aliquet arcu,
+ut egestas erat elit at dui. Nulla pellentesque aliquam risus, ut mollis
+dolor luctus gravida. Praesent non dictum ipsum. Duis laoreet nisl vel
+condimentum dictum.
+
+Headings in structured abstracts should be bold and followed by a
+period. Each heading should begin a new paragraph. For example:
+
+\textbf{Background.}~The background section text goes here. Next line
+for new section.
+
+\textbf{Methods.}~The methods section text goes here.
+
+\textbf{Results.}~The results section text goes here.
+
+\textbf{Discussion.~}The discussion section text goes here.%
+\end{abstract}%
+
+
+
+\sloppy
+
+
+\section*{Introduction}
+
+{\label{108982}}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+ultrices posuere sapien ut rutrum. Vivamus venenatis volutpat metus ut
+tempus. Nullam pretium diam tortor, eget rhoncus sapien laoreet in.
+Vivamus luctus tortor auctor turpis dapibus, tempor rhoncus magna
+auctor. Donec egestas orci eget ipsum placerat placerat. Aenean et
+dignissim ex. Aenean fermentum iaculis diam, eget mattis elit cursus ac.
+Suspendisse gravida, sem ac volutpat mattis, justo purus aliquet arcu,
+ut egestas erat elit at dui. Nulla pellentesque aliquam risus, ut mollis
+dolor luctus gravida. Praesent non dictum ipsum. Duis laoreet nisl vel
+condimentum dictum~\cite{alabadi2022industrial}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\columnwidth]{FIG1.pdf}
+    \caption{Sample Figure}
+    \label{fig:setup}
+\end{figure}
+
+\section*{Materials \& Methods}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+ultrices posuere sapien ut rutrum. Vivamus venenatis volutpat metus ut
+tempus. Nullam pretium diam tortor, eget rhoncus sapien laoreet in.
+Vivamus luctus tortor auctor turpis dapibus, tempor rhoncus magna
+auctor. Donec egestas orci eget ipsum placerat placerat. Aenean et
+dignissim ex. Aenean fermentum iaculis diam, eget mattis elit cursus ac.
+Suspendisse gravida, sem ac volutpat mattis, justo purus aliquet arcu,
+ut egestas erat elit at dui. Nulla pellentesque aliquam risus, ut mollis
+dolor luctus gravida. Praesent non dictum ipsum.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+ultrices posuere sapien ut rutrum. Vivamus venenatis volutpat metus ut
+tempus. Nullam pretium diam tortor, eget rhoncus sapien laoreet in.
+Vivamus luctus tortor auctor turpis dapibus, tempor rhoncus magna
+auctor. Donec egestas orci eget ipsum placerat placerat. Aenean et
+dignissim ex. Aenean fermentum iaculis diam, eget mattis elit cursus ac.
+Suspendisse gravida, sem ac volutpat mattis, justo purus aliquet arcu,
+ut egestas erat elit at dui. Nulla pellentesque aliquam risus, ut mollis
+dolor luctus gravida. Praesent non dictum ipsum.
+
+
+\begin{table}[htbp]
+\centering
+\caption{Existing related work done on food detection and classification. A clear comparative study of strengths and limitations of existing methods with the proposed one.}
+\label{tab:comparative_study}
+\renewcommand{\arraystretch}{1.3} % Adds padding to rows
+\begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|p{3cm}|p{3cm}|}
+\hline
+\textbf{Approach and Reference} & \textbf{Contribution} & \textbf{CoMethod} & \textbf{Strengths} & \textbf{Limitations} \\
+\hline
+
+% Row 1: Spoilage Detection
+Food Spoilage Detection, Pandit, H. \cite{10467524} & 
+Identified spoilage in raw ingredients (fruits and vegetables) to prevent intake. & 
+Utilization of ML/AI. & 
+1. Effective for pre-cooking inventory management. \newline 
+2. High accuracy for distinct. & 
+1. Limited to raw ingredients. \newline 
+2. Cannot identify items. \\
+\hline
+
+\end{tabular}
+\end{table}
+
+
+\section*{Results}\label{results}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+ultrices posuere sapien ut rutrum. Vivamus venenatis volutpat metus ut
+tempus. Nullam pretium diam tortor, eget rhoncus sapien laoreet in.
+Vivamus luctus tortor auctor turpis dapibus, tempor rhoncus magna
+auctor. Donec egestas orci eget ipsum placerat placerat. Aenean et
+dignissim ex. Aenean fermentum iaculis diam, eget mattis elit cursus ac.
+Suspendisse gravida, sem ac volutpat mattis, justo purus aliquet arcu,
+ut egestas erat elit at dui. Nulla pellentesque aliquam risus, ut mollis
+dolor luctus gravida. Praesent non dictum ipsum.Lorem ipsum dolor sit
+amet, consectetur adipiscing elit. Quisque ultrices posuere sapien ut
+rutrum. Vivamus venenatis volutpat metus ut tempus. Nullam pretium diam
+tortor, eget rhoncus sapien laoreet in. Vivamus luctus tortor auctor
+turpis dapibus, tempor rhoncus magna auctor. Donec egestas orci eget
+ipsum placerat placerat. Aenean et dignissim ex. Aenean fermentum
+iaculis diam, eget mattis elit cursus ac. Suspendisse gravida, sem ac
+volutpat mattis, justo purus aliquet arcu, ut egestas erat elit at dui.
+Nulla pellentesque aliquam risus, ut mollis dolor luctus gravida.
+Praesent non dictum ipsum.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+ultrices posuere sapien ut rutrum. Vivamus venenatis volutpat metus ut
+tempus. Nullam pretium diam tortor, eget rhoncus sapien laoreet in.
+Vivamus luctus tortor auctor turpis dapibus, tempor rhoncus magna
+auctor. Donec egestas orci eget ipsum placerat placerat. Aenean et
+dignissim ex. Aenean fermentum iaculis diam, eget mattis elit cursus ac.
+Suspendisse gravida, sem ac volutpat mattis, justo purus aliquet arcu,
+ut egestas erat elit at dui. Nulla pellentesque aliquam risus, ut mollis
+dolor luctus gravida. Praesent non dictum ipsum.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+ultrices posuere sapien ut rutrum. Vivamus venenatis volutpat metus ut
+tempus. Nullam pretium diam tortor, eget rhoncus sapien laoreet in.
+Vivamus luctus tortor auctor turpis dapibus, tempor rhoncus magna
+auctor. Donec egestas orci eget ipsum placerat placerat. Aenean et
+dignissim ex. Aenean fermentum iaculis diam, eget mattis elit cursus ac.
+Suspendisse gravida, sem ac volutpat mattis, justo purus aliquet arcu,
+ut egestas erat elit at dui. Nulla pellentesque aliquam risus, ut mollis
+dolor luctus gravida. Praesent non dictum ipsum.Lorem ipsum dolor sit
+amet, consectetur adipiscing elit. Quisque ultrices posuere sapien ut
+rutrum. Vivamus venenatis volutpat metus ut tempus. Nullam pretium diam
+tortor, eget rhoncus sapien laoreet in. Vivamus luctus tortor auctor
+turpis dapibus, tempor rhoncus magna auctor. Donec egestas orci eget
+ipsum placerat placerat. Aenean et dignissim ex. Aenean fermentum
+iaculis diam, eget mattis elit cursus ac. Suspendisse gravida, sem ac
+volutpat mattis, justo purus aliquet arcu, ut egestas erat elit at dui.
+Nulla pellentesque aliquam risus, ut mollis dolor luctus gravida.
+Praesent non dictum ipsum.Lorem ipsum dolor sit amet, consectetur
+adipiscing elit. Quisque ultrices posuere sapien ut rutrum. Vivamus
+venenatis volutpat metus ut tempus. Nullam pretium diam tortor, eget
+rhoncus sapien laoreet in. Vivamus luctus tortor auctor turpis dapibus,
+tempor rhoncus magna auctor. Donec egestas orci eget ipsum placerat
+placerat. Aenean et dignissim ex. Aenean fermentum iaculis diam, eget
+mattis elit cursus ac. Suspendisse gravida, sem ac volutpat mattis,
+justo purus aliquet arcu, ut egestas erat elit at dui. Nulla
+pellentesque aliquam risus, ut mollis dolor luctus gravida. Praesent non
+dictum ipsum.
+
+\section*{Conclusions}\label{conclusions}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+ultrices posuere sapien ut rutrum. Vivamus venenatis volutpat metus ut
+tempus. Nullam pretium diam tortor, eget rhoncus sapien laoreet in.
+Vivamus luctus tortor auctor turpis dapibus, tempor rhoncus magna
+auctor. Donec egestas orci eget ipsum placerat placerat. Aenean et
+dignissim ex. Aenean fermentum iaculis diam, eget mattis elit cursus ac.
+Suspendisse gravida, sem ac volutpat mattis, justo purus aliquet arcu,
+ut egestas erat elit at dui. Nulla pellentesque aliquam risus, ut mollis
+dolor luctus gravida. Praesent non dictum ipsum.
+
+\section*{Acknowledgements}\label{acknowledgements}
+
+\begin{itemize}
+\tightlist
+\item
+  As a matter of courtesy we suggest you inform anyone whom you
+  acknowledge.
+\end{itemize}
+
+\par\null
+
+\selectlanguage{english}
+\FloatBarrier
+\bibliographystyle{plainnat}
+\bibliography{sample-base.bib}
+}
+
+\end{CJK}\end{document}
+

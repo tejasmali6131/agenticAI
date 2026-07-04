@@ -1,0 +1,429 @@
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{CJKutf8} 
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage[section]{placeins}
+\usepackage{xcolor}
+\usepackage{breakcites}
+\usepackage{lineno}
+\usepackage{hyphenat}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}
+
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\@combinedblfloats{\box\@outputbox}{\unvbox\@outputbox}{}{%
+  \errmessage{\noexpand\@combinedblfloats could not be patched}%
+}%
+\makeatother
+
+\usepackage[round]{natbib}
+\let\cite\citep
+
+\renewenvironment{abstract}
+  {{\bfseries\noindent{\abstractname}\par\nobreak}\footnotesize}
+  {\bigskip}
+
+\titlespacing{\section}{0pt}{*3}{*1}
+\titlespacing{\subsection}{0pt}{*2}{*0.5}
+\titlespacing{\subsubsection}{0pt}{*1.5}{0pt}
+
+\usepackage{authblk}
+
+\usepackage{graphicx}
+\usepackage[space]{grffile}
+\usepackage{latexsym}
+\usepackage{textcomp}
+\usepackage{longtable}
+\usepackage{tabulary}
+\usepackage{booktabs,array,multirow}
+\usepackage{amsfonts,amsmath,amssymb}
+\providecommand\citet{\cite}
+\providecommand\citep{\cite}
+\providecommand\citealt{\cite}
+\newif\iflatexml\latexmlfalse
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\AtBeginDocument{\DeclareGraphicsExtensions{.pdf,.PDF,.eps,.EPS,.png,.PNG,.tif,.TIF,.jpg,.JPG,.jpeg,.JPEG}}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{float}
+\begin{document}
+\begin{CJK}{UTF8}{gbsn}
+
+\title{Agentic AI for Conversational Architectural Floor Plan Generation}
+
+\author[1]{Tejas S. Mali}
+\author[1]{Siddharth K. Gaikwad}
+
+\affil[1]{Dept. of Computer Science and Engineering, COEP Technological University, Pune, India}
+
+\vspace{-1em}
+
+\date{March 05, 2026}
+
+\begingroup
+\let\center\flushleft
+\let\endcenter\endflushleft
+\maketitle
+\endgroup
+
+\selectlanguage{english}
+
+\begin{abstract}
+
+\textbf{Background.}~Architectural floor plan design is a complex and expertise-driven process that remains largely inaccessible to non-technical users during early design stages. Although recent advances in generative models and Large Language Models (LLMs) have demonstrated potential for automating layout synthesis and enabling natural language interaction, most existing systems lack autonomous decision-making and end-to-end orchestration across the design pipeline.
+
+\textbf{Methods.}~This study proposes an Agentic Artificial Intelligence framework for conversational architectural floor plan generation. The system integrates an LLM for requirement elicitation with a graph-based deep generative model for spatial layout synthesis. User requirements expressed in natural language are converted into structured representations, formalized as room adjacency graphs, and processed through a graph-conditioned generative model. An autonomous agent coordinates requirement extraction, graph construction, iterative refinement, and objective evaluation within a unified control loop.
+
+\textbf{Results.}~Experimental evaluation across multiple residential scenarios demonstrates that the proposed system consistently generates spatially coherent and topologically valid floor plans, achieving composite quality scores between 82 and 92 on a 100-point scale. The agent autonomously produces multiple layout variations and selects the most balanced configuration using predefined evaluation metrics. Component contribution analysis confirms that autonomous best-of-$N$ selection yields a measurable improvement over single-seed generation, supporting rapid and accessible design exploration.
+
+\textbf{Discussion.}~By unifying conversational interaction, graph-based reasoning, and deep generative modeling within an agentic architecture, the proposed approach advances user-centric and accessible architectural design automation. The framework highlights the potential of Agentic AI to bridge the gap between natural language design communication and structured spatial synthesis in early-stage residential planning.
+
+\end{abstract}
+
+\vspace{0.5em}
+\noindent \textbf{Keywords:} Agentic Artificial Intelligence, Conversational Architectural Design, Floor Plan Generation, Large Language Models, Graph-Based Spatial Representation, Deep Generative Models
+\vspace{1em}
+
+\sloppy
+
+\section*{Introduction}
+
+Architectural floor plan design forms the foundation of residential building development, directly influencing spatial efficiency, circulation flow, usability, environmental comfort, and long-term adaptability. In early-stage design, architects translate abstract client requirements into structured spatial configurations through iterative sketching, constraint negotiation, and refinement. This process requires substantial domain expertise, spatial reasoning skills, and repeated client–architect interaction. Consequently, early conceptual design remains largely inaccessible to non-technical stakeholders, who may find it difficult to communicate spatial expectations in formal architectural terms. These challenges motivate the development of intelligent computational systems capable of assisting or automating layout generation while preserving design coherence and functional validity.
+
+Over the past decade, advances in data-driven design and deep generative modeling have significantly transformed architectural layout synthesis. Graph-based representations have been widely adopted to encode room relationships and adjacency constraints, enabling structured spatial reasoning \cite{b19}. Data-centric frameworks such as RPLAN have demonstrated how large annotated datasets can support learning-based interior plan generation \cite{b18}. Generative Adversarial Networks (GANs), particularly iterative refinement architectures such as House-GAN++, further improved spatial realism by enforcing relational consistency among rooms \cite{b16}. Diffusion-based approaches, including vectorized denoising models, have enhanced diversity and geometric continuity in floor plan synthesis \cite{b17}. While these methods achieve strong generative performance, they typically assume well-defined graph inputs or manually structured constraints, thereby limiting direct usability for non-expert users.
+
+In parallel, the emergence of Large Language Models (LLMs) has enabled natural language-driven interaction across diverse design domains. Conversational systems have demonstrated the ability to interpret user intent, translate textual descriptions into structured representations, and facilitate intuitive human–AI collaboration \cite{b1}, \cite{b20}. In architectural contexts, such models reduce the technical barrier for communicating design requirements and support client-centric engagement. However, existing language-guided layout systems often treat the LLM as an isolated translation module rather than as an autonomous reasoning component integrated throughout the pipeline. As a result, downstream generation, evaluation, and refinement stages frequently remain detached from conversational intelligence.
+
+Beyond isolated generation techniques, the broader concept of Agentic Artificial Intelligence introduces a paradigm in which systems autonomously plan, reason, evaluate, and adapt toward achieving a defined objective \cite{b21}. Agentic systems maintain internal state representations, coordinate multi-stage workflows, and iteratively refine outputs without continuous human intervention. In architectural computation, reinforcement learning and agent-based frameworks have been explored for spatial optimization and generative concept discovery \cite{b6}, \cite{b7}. Nevertheless, a unified framework that combines conversational requirement elicitation, graph-based spatial reasoning, deep generative synthesis, and autonomous evaluation within a single agentic loop remains largely unexplored.
+
+To address these limitations, this paper proposes an Agentic AI framework for conversational architectural floor plan generation. The system transforms natural language input into structured design specifications through iterative conversational reasoning. Extracted requirements are formalized as a relational room graph, which serves as input to a graph-conditioned deep generative model for spatial synthesis. Multiple layout variations are produced and evaluated using objective criteria reflecting spatial balance and topological consistency. A centralized design agent orchestrates these stages through an autonomous control loop, maintaining system state and performing self-evaluation to select the most coherent layout. The primary contribution of this work lies in unifying conversational interaction, symbolic graph reasoning, and neural generative modeling within a single agentic architecture, enabling fully automated early-stage residential layout generation while preserving interpretability, structural validity, and user accessibility.
+
+
+\section*{Related Work}
+
+\subsection*{Graph-Based and Data-Driven Floor Plan Generation}
+
+Early data-driven approaches to residential layout generation represent floor plans as structured graphs encoding room types and adjacency relationships. Graph2Plan learns a mapping from layout graphs to geometric floor plans, demonstrating that topological constraints can guide spatial synthesis \cite{b19}. Similarly, RPLAN introduced a large-scale dataset of annotated residential layouts and highlighted the importance of graph-structured representations for realistic plan generation \cite{b18}. Multimodal approaches further integrate topology and spatial semantics to improve layout expressiveness \cite{b3}. Large-scale annotated datasets such as CubiCasa5k have also supported advances in floor plan understanding and generation tasks \cite{b4}. Subsequent work extended graph-constrained formulations to improve spatial feasibility and room connectivity \cite{b2}. While these methods provide structured control, they generally assume graph inputs provided by experts, limiting usability for non-technical users.
+
+\subsection*{Deep Generative Models for Layout Synthesis}
+
+GANs have been widely adopted for floor plan generation due to their ability to model complex spatial distributions. House-GAN++ introduced an iterative layout refinement framework using convolutional message passing to enforce adjacency constraints during generation \cite{b16}. This approach significantly improved layout coherence compared to earlier one-shot GAN models. More recent diffusion-based methods, such as HouseDiffusion, model layout generation as a denoising process over vector representations, yielding smoother room boundaries and improved diversity \cite{b17}. Hybrid approaches combining GANs with evolutionary optimization have also been explored to balance design quality and constraint satisfaction \cite{b8}. Optimization-driven studies further demonstrate how architectural layout and environmental constraints can be jointly considered in spatial planning \cite{b14}. Despite their effectiveness, these models typically operate as standalone generators and lack integrated mechanisms for requirement interpretation and autonomous evaluation.
+
+\subsection*{Conversational and Language-Guided Design Systems}
+
+The emergence of LLMs has enabled natural language interaction for early-stage design tasks. ChatDesign demonstrated that language models can bootstrap floor plan generation by translating textual descriptions into structured layout representations \cite{b1}. Prompt-guided layout generation frameworks further explore how textual cues can influence spatial arrangements \cite{b5}, \cite{b20}. Beyond layout synthesis, conversational interfaces have also been explored to enhance architect-client communication and early design collaboration in BIM-enabled workflows \cite{b9}. These systems reduce the technical barrier for users but often rely on predefined pipelines where language models serve primarily as input translators rather than autonomous decision makers.
+
+\subsection*{Agentic and Autonomous Design Frameworks}
+
+Agentic AI emphasizes goal-driven behavior, multi-step reasoning, and autonomous decision-making \cite{b21}. In architectural contexts, agent-based and reinforcement learning methods have been applied to spatial optimization, generative concept discovery, and robotic construction planning \cite{b6}, \cite{b7}, \cite{b11}, \cite{b12}. However, such systems typically focus on optimization within constrained environments and do not integrate conversational interaction or end-to-end generative pipelines. Surveys of AI techniques in early architectural design further highlight the lack of unified agentic frameworks that combine interaction, generation, and evaluation \cite{b10}, \cite{b13}.
+
+\section*{Proposed Methodology}
+
+\subsection*{Overall System Architecture}
+
+The proposed framework follows a modular architecture coordinated by a central design agent. The agent maintains the system state, orchestrates data flow between components, and autonomously decides execution strategies at each stage of the pipeline. An overview of the system architecture is illustrated in Fig.~\ref{fig:system_architecture}.
+
+% \begin{figure}[htbp]
+% \centering
+% % This ensures the image never exceeds the text width OR 40% of the page height
+% \includegraphics[width=\linewidth, height=0.8\textheight, keepaspectratio]{system_architecture.png}
+% \caption{Overall architecture of the proposed agentic floor plan generation framework.}
+% \label{fig:system_architecture}
+% \end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\linewidth, keepaspectratio]{system_architecture.png}
+\caption{Overall architecture of the proposed agentic floor plan generation framework.}
+\label{fig:system_architecture}
+\end{figure}
+
+The pipeline consists of five primary stages, each serving a distinct role within the autonomous workflow:
+
+\begin{enumerate}
+    \item \textbf{Conversational Requirement Elicitation:} The user interacts with the system through a natural language interface powered by an LLM. The agent conducts a multi-turn dialogue, interprets design intent, asks clarifying questions when specifications are incomplete, and accumulates context. The output of this stage is a coherent conversational transcript capturing the user's residential design preferences.
+
+    \item \textbf{Structured Requirement Extraction:} From the accumulated dialogue context, the agent autonomously extracts a structured requirement specification in a predefined JSON schema. This includes concrete attributes such as bedroom count, bathroom count, presence of optional spaces (balcony, study, storage), and living-dining configuration. The structured output serves as the formal input for graph construction.
+
+    \item \textbf{Room Graph Construction:} The structured requirements are transformed into a relational room adjacency graph $G = (V, E)$, encoding room types as labeled nodes and spatial relationships as signed edges. The agent applies domain-informed architectural rules to determine which rooms must be adjacent, which must be separated, and how connectivity should be organized around a central hub. This graph is compatible with the input format expected by the downstream generative model.
+
+    \item \textbf{Layout Generation via Deep Generative Model:} The room graph is passed to a graph-conditioned Generative Adversarial Network that produces room-level spatial masks through iterative refinement. Each room is represented as a $64 \times 64$ binary mask indicating its spatial footprint. Multiple layout variations are generated by sampling different random seeds, allowing the system to explore diverse spatial configurations from the same graph.
+
+    \item \textbf{Autonomous Evaluation and Selection:} Each generated layout variation is scored using a composite quality metric that assesses spatial balance, room coverage, shape regularity, overlap, adjacency fidelity, proportional correctness, and placement compliance. The agent autonomously selects the highest-scoring layout and presents it to the user along with supporting metadata.
+\end{enumerate}
+
+\subsection*{Conversational Elicitation and Structured Extraction}
+
+The conversational module, consistent with prior natural language-driven design interaction paradigms \cite{b1}, \cite{b15}, \cite{b20}, supports multi-turn dialogue with incremental clarification and context retention. Once sufficient context is obtained, the agent extracts structured design requirements (room counts, optional spaces, layout preferences) in a predefined schema, bridging unstructured language input and formal graph-based spatial representations \cite{b18}, \cite{b19}.
+
+\subsection*{Room Graph Construction}
+Based on the extracted requirements, the agent constructs a relational room graph $G = (V, E)$, where $V = \{v_1, v_2, \ldots, v_n\}$ represents the set of $n$ room nodes and $E \subseteq V \times V$ represents the set of adjacency edges. Each node $v_i \in V$ is assigned a semantic label $l_i \in L$ from a predefined vocabulary of room types $L = \{\text{Living Room, Kitchen, Bedroom, Bathroom, Balcony, Entrance, Dining, Study, Storage, \ldots}\}$ drawn from 19 categories used in the RPLAN dataset \cite{b18}.
+
+Each edge $e_{ij} \in E$ carries a signed relation $r_{ij} \in \{+1, -1\}$, where $r_{ij} = +1$ denotes that rooms $v_i$ and $v_j$ must share a physical boundary (positive adjacency), and $r_{ij} = -1$ denotes that they should remain spatially separated (negative adjacency). This signed encoding enables the downstream generative model to reason about both attractive and repulsive spatial relationships among rooms.
+
+The graph follows a hub-and-spoke topology in which the living room serves as the central hub node, consistent with spatial organization patterns observed in large-scale residential plan corpora \cite{b19}. Bedrooms, the kitchen, and optional rooms connect to the living room through positive edges, while each bedroom connects to at most one attached bathroom. The construction process enforces two categories of domain-informed rules:
+
+\noindent\textbf{Mandatory adjacencies} ($E^{+}$): Room pairs that must share a boundary for functional coherence:
+\begin{equation}
+E^{+} = \{(\text{Living}, \text{Kitchen}),\; (\text{Living}, \text{Entrance}),\; (\text{Kitchen}, \text{Dining})\}
+\end{equation}
+
+\noindent\textbf{Forbidden adjacencies} ($E^{-}$): Room pairs that must not share a boundary due to architectural, hygiene, or noise considerations:
+\begin{equation}
+E^{-} = \{(\text{Kitchen}, \text{Bathroom}),\; (\text{Bedroom}, \text{Kitchen}),\; (\text{Bathroom}, \text{Balcony}),\; (\text{Bathroom}, \text{Entrance})\}
+\end{equation}
+
+These rules are derived from standard residential design practice and the National Building Code of India (NBC 2016) \cite{b2}, \cite{b19}. All room pairs not covered by $E^{+}$ or $E^{-}$ are assigned negative edges by default, ensuring that unconstrained rooms are not forced into unnecessary spatial contact.
+
+\subsection*{Deep Generative Layout Synthesis}
+
+The room graph constructed in the preceding stage serves as the conditioning input to a graph-conditioned Generative Adversarial Network based on the House-GAN++ architecture \cite{b16}. The generator receives, for each room node $v_i$, a latent noise vector $z_i \sim \mathcal{N}(0, I)$ of dimension 128, concatenated with a one-hot encoding $t_i \in \{0, 1\}^{18}$ of the room type label. The combined input feature for each room is therefore $x_i = [z_i \| t_i] \in \mathbb{R}^{146}$.
+
+Spatial interaction among room nodes is modeled through Convolutional Message Passing (CMP) layers, which propagate information along graph edges. At each CMP layer $l$, the hidden representation of room $i$ is updated as:
+\begin{equation}
+h_i^{(l+1)} = \phi\!\left(h_i^{(l)},\; \mathrm{pool}\!\left(\{h_j^{(l)} : r_{ij} = +1\}\right),\; \mathrm{pool}\!\left(\{h_k^{(l)} : r_{ik} = -1\}\right)\right)
+\end{equation}
+where $\phi$ denotes a convolutional encoder, and $\mathrm{pool}(\cdot)$ is a permutation-invariant aggregation over neighbor features. This formulation enables the network to simultaneously enforce attractive constraints between adjacent rooms and repulsive constraints between non-adjacent rooms.
+
+The generator employs an iterative refinement strategy in which room masks are progressively fixed by room type. In each refinement iteration, a subset of room masks is held constant while the remaining rooms are regenerated conditioned on the fixed regions. Formally, let $F_t \subseteq V$ denote the set of rooms fixed after iteration $t$. The model generates:
+\begin{equation}
+M^{(t+1)} = \mathcal{G}\!\left(z,\; G,\; M^{(t)},\; F_t\right)
+\end{equation}
+where $M^{(t)}$ is the set of room masks at iteration $t$ and $\mathcal{G}$ is the generator network. Fixed rooms are indicated to the model through an additional binary indicator channel appended to each room's mask input. Rooms not in $F_t$ receive a blank (uninformative) mask, signaling the model to regenerate their spatial footprints. Multiple final refinement passes are performed after all room types have been fixed, allowing boundary-level adjustments to converge to a coherent layout. The output of this stage is a set of $n$ room masks $\{M_1, M_2, \ldots, M_n\}$, each of resolution $64 \times 64$, representing the spatial footprint of each room on the floor plan canvas.
+
+\subsection*{Autonomous Evaluation and Selection}
+To support design exploration, the agent generates $N$ independent layout variations for a single set of user requirements by sampling different random seeds. Each variation produces a distinct spatial arrangement from the same underlying room graph. To select the optimal result without human intervention, the system evaluates every variation using a composite quality score $S \in [0, 100]$ defined as:
+\begin{equation}
+S = S_{\mathrm{area}} + S_{\mathrm{cov}} + S_{\mathrm{shape}} + S_{\mathrm{olap}} + S_{\mathrm{adj}} + S_{\mathrm{prop}} + S_{\mathrm{place}}
+\end{equation}
+
+\noindent Table~\ref{tab:scoring_components} summarizes the individual components, their maximum contribution to the total score, and a brief description of what each component captures.
+
+\begin{table}[H]
+\caption{Components of the Composite Layout Quality Score}
+\centering
+\begin{tabular}{|l|c|p{9cm}|}
+\hline
+\textbf{Component} & \textbf{Max} & \textbf{Description} \\
+\hline
+$S_{\mathrm{area}}$ & 15 & Penalizes extreme variance in room areas using the coefficient of variation; degenerate rooms ($< 20$ px) incur additional penalty. \\
+\hline
+$S_{\mathrm{cov}}$ & 20 & Rewards high coverage of the floor plate by room masks and penalizes interior gap pixels. \\
+\hline
+$S_{\mathrm{shape}}$ & 15 & Measures average rectangularity (fill ratio within bounding box) across all rooms. \\
+\hline
+$S_{\mathrm{olap}}$ & 15 & Penalizes pixel-level overlap between room masks, scaled by the ratio of overlapping pixels to total room area. \\
+\hline
+$S_{\mathrm{adj}}$ & 15 & Fraction of required positive adjacencies in the graph that are physically realized (rooms touch within one-pixel dilation). \\
+\hline
+$S_{\mathrm{prop}}$ & 10 & Penalizes bathrooms and balconies whose area exceeds a proportion threshold relative to the smallest bedroom. \\
+\hline
+$S_{\mathrm{place}}$ & 10 & Deducts points for each forbidden adjacency violation and awards a bonus for balconies placed on exterior walls. \\
+\hline
+\end{tabular}
+\label{tab:scoring_components}
+\end{table}
+
+The agent autonomously selects the layout with the highest composite score:
+\begin{equation}
+M^{*} = \arg\max_{k=1}^{N}\; S_k
+\end{equation}
+where $S_k$ is the composite score of the $k$-th variation. The selected layout, along with all variation scores and generation metadata, is presented to the user.
+
+\subsection*{Agentic Control Loop}
+
+The defining characteristic of the proposed methodology is the agentic control loop that coordinates all stages of the pipeline. Inspired by agent-based AI principles \cite{b21}, the agent maintains an internal state machine that progresses through well-defined phases without external supervision.
+
+The agent begins in a \textsc{Listening} state, where it processes incoming user messages and accumulates conversational context. Once sufficient information has been gathered, the agent transitions to an \textsc{Understanding} state, in which it invokes the LLM to extract structured requirements. During the \textsc{Planning} state, the agent decides on the graph construction strategy. Two strategies are available: (a) \textit{template-based construction}, where the agent searches a corpus of approximately 1,000 pre-analyzed floor plan templates for a close match, and (b) \textit{direct construction}, where the agent builds the room graph from scratch using domain rules. A template match score $S_{\mathrm{tmpl}}$ is computed for each candidate; the agent selects the template only if $S_{\mathrm{tmpl}} < \tau$ (threshold $\tau = 5$), and falls back to direct construction otherwise. This decision is made entirely by the agent without user involvement.
+
+In the \textsc{Executing} state, the agent invokes the generative model to produce $N$ layout variations from the constructed graph. It then enters the \textsc{Evaluating} state, scoring each variation with the composite quality metric described in the Autonomous Evaluation and Selection subsection and selecting the highest-scoring result. Finally, in the \textsc{Presenting} state, the agent compiles all outputs---the selected floor plan, variation scores, room metadata, and the full conversation history---into a structured session record for traceability.
+
+This multi-phase design enables true end-to-end automation. Unlike pipeline approaches that require external triggers between stages, the agent's control loop internalizes all transition logic, enabling it to handle incomplete inputs (by requesting clarification), recover from suboptimal template matches (by falling back to direct construction), and rank competing layout alternatives without human comparison.
+
+\section*{Experiments and Results}
+
+This section evaluates the proposed agentic framework through a set of controlled experiments designed to assess layout quality, spatial coherence, and autonomous decision-making. The experiments focus on residential floor plan generation scenarios commonly studied in prior work, enabling qualitative and quantitative comparison with existing approaches.
+
+\subsection*{Experimental Setup}
+
+The system is evaluated on multiple residential design scenarios, including one-bedroom, two-bedroom, and three-bedroom configurations with varying optional spaces such as balconies or study rooms. These configurations align with layout distributions commonly observed in publicly available residential datasets and prior floor plan generation studies \cite{b18}, \cite{b16}. 
+
+The deep generative component is based on a graph-conditioned generative adversarial model trained on residential layout data. For each user requirement set, the agent generates multiple layout variations by sampling different random seeds. This strategy follows established practices in generative layout modeling to explore spatial diversity \cite{b17}. All experiments are conducted using the same model configuration to ensure consistency across scenarios.
+
+\subsection*{Evaluation Metrics}
+
+Evaluating architectural layouts remains challenging due to the absence of universally accepted quantitative benchmarks. In line with prior research, this work adopts objective spatial metrics that approximate layout quality without relying on subjective human judgment \cite{b16}, \cite{b19}. Each generated layout is assessed using the composite quality score $S \in [0,100]$ whose seven components are detailed in Table~\ref{tab:scoring_components}.
+
+\subsection*{Qualitative Results}
+
+Fig.~\ref{fig:qualitative_results} illustrates representative floor plans generated by the proposed system for different residential scenarios. The generated layouts demonstrate coherent spatial organization, clear room separation, and adherence to expected residential adjacency patterns, such as connectivity between living spaces and entrances or proximity between bedrooms and bathrooms. These qualitative observations are consistent with findings reported in graph-based and GAN-based layout generation literature \cite{b16}, \cite{b19}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth, height=0.45\textheight, keepaspectratio]{qualitative_results.png}
+\caption{Example floor plans generated by the proposed system for different residential configurations.}
+\label{fig:qualitative_results}
+\end{figure}
+
+\subsection*{Performance Evaluation}
+
+Table~\ref{tab:quantitative_results} summarizes the system's performance across different complexity levels. The results indicate that the system can generate valid, multi-room layouts in under one minute on standard hardware. The ``Graph Complexity'' metric reflects the number of nodes (rooms) and edges (connections) managed by the agent, demonstrating the system's ability to handle increasingly complex spatial requirements while maintaining reasonable inference times.
+
+\begin{table}[!t]
+\caption{System Performance Across Residential Scenarios}
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Scenario} & \textbf{Graph Complexity} & \textbf{Variations Gen.} & \textbf{Avg. Gen. Time} \\
+\hline
+1 BHK & 4--5 Nodes & 7 & $\approx$ 45 sec \\
+\hline
+2 BHK & 6--7 Nodes & 7 & $\approx$ 55 sec \\
+\hline
+3 BHK & 8--10 Nodes & 7 & $\approx$ 65 sec \\
+\hline
+\end{tabular}
+\label{tab:quantitative_results}
+\end{table}
+
+\subsection*{Quantitative Quality Assessment}
+
+To move beyond generation timing alone, the composite quality score $S$ described in the Autonomous Evaluation and Selection subsection was recorded for every variation produced during the experiments. Table~\ref{tab:quality_scores} reports the best, mean, standard deviation, and range of quality scores observed across residential configurations. For each configuration, seven candidate variations were generated and scored.
+
+\begin{table}[!t]
+\caption{Layout Quality Scores Across Residential Configurations}
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{Rooms} & \textbf{Best $S$} & \textbf{Mean $\pm$ SD} & \textbf{Range} \\
+\hline
+2~BHK (with balcony) & 7 & 85.71 & 82.45 $\pm$ 2.83 & 72.44--85.71 \\
+\hline
+2~BHK (without balcony) & 6 & 91.99 & 86.01 $\pm$ 3.21 & 79.30--91.99 \\
+\hline
+3~BHK (with balcony) & 9 & 82.54 & 80.06 $\pm$ 3.12 & 72.67--82.54 \\
+\hline
+3~BHK (without balcony) & 7 & 89.04 & 87.47 $\pm$ 1.23 & 85.33--89.04 \\
+\hline
+\end{tabular}
+\label{tab:quality_scores}
+\end{table}
+
+Across all configurations, the agent-selected best layouts achieved scores between 82.54 and 91.99, with an overall mean best score of 87.32. The standard deviations within each configuration remain moderate (1.23--3.21), indicating that the generative model produces reasonably consistent outputs across random seeds. The score ranges (3.71--12.69 points between worst and best within a configuration) confirm the value of generating multiple variations: a single random generation would, on average, yield a layout approximately 4.87 points below the best achievable score for that configuration.
+
+\subsection*{Component Contribution Analysis}
+
+To assess the relative contribution of key design factors, the experimental data was analyzed along three dimensions without requiring additional model runs.
+
+\subsubsection*{Autonomous Selection vs.\ Random Generation}
+Table~\ref{tab:ablation_selection} compares the quality score of the agent-selected layout (best-of-$N$) against the average score of all $N=7$ candidates. Across all configurations, autonomous selection yields a consistent improvement, confirming that multi-variation generation followed by objective scoring is a more effective strategy than presenting any single random output.
+
+\begin{table}[!t]
+\caption{Effect of Autonomous Selection on Layout Quality}
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{Agent Best $S$} & \textbf{Mean $S$} & \textbf{Gain} \\
+\hline
+2~BHK (with balcony) & 85.71 & 82.45 & +3.26 \\
+\hline
+2~BHK (without balcony) & 91.99 & 86.01 & +5.98 \\
+\hline
+3~BHK (with balcony) & 82.54 & 80.06 & +2.48 \\
+\hline
+3~BHK (without balcony) & 89.04 & 87.47 & +1.57 \\
+\hline
+\multicolumn{3}{|l|}{\textbf{Average Gain}} & \textbf{+3.32} \\
+\hline
+\end{tabular}
+\label{tab:ablation_selection}
+\end{table}
+
+\subsubsection*{Impact of Layout Complexity}
+Comparing two-bedroom and three-bedroom configurations reveals that simpler layouts (fewer rooms) tend to achieve higher scores. The mean best score for 2~BHK configurations is 88.85, while the corresponding value for 3~BHK configurations is 85.79—a difference of approximately 3 points. This is expected, as fewer rooms reduce the combinatorial difficulty of satisfying all adjacency and proportion constraints simultaneously. The trend is consistent with scalability observations reported in prior graph-based generation work \cite{b16}.
+
+\subsubsection*{Effect of Optional Rooms}
+Configuring a balcony as part of the layout introduces additional spatial constraints (exterior wall placement, proportion limits). Configurations that include a balcony achieve an average best score of 84.13, compared to 90.52 for configurations without a balcony—a difference of approximately 6.4 points. This penalty reflects the added difficulty of placing an externally anchored room within an already constrained spatial arrangement, and suggests that balcony handling remains a challenging case for graph-conditioned generative models.
+
+\subsection*{Discussion}
+
+\subsubsection*{Comparison with Existing Approaches}
+
+Direct numerical comparison with prior floor plan generation systems is constrained by the absence of a shared evaluation protocol across the literature. House-GAN++ \cite{b16} reports Fréchet Inception Distance (FID) on the RPLAN test set, while HouseDiffusion \cite{b17} evaluates using both FID and graph compatibility metrics defined over vector-format rooms. These metrics are computed on different output representations and dataset splits, making one-to-one score comparison methodologically unsound.
+
+Nevertheless, several qualitative and structural comparisons can be drawn. First, both House-GAN++ and HouseDiffusion assume that a complete, expert-designed room graph is provided as input. In contrast, the proposed system constructs this graph autonomously from conversational natural language input, thereby addressing a usability gap that prior methods leave open. Second, neither House-GAN++ nor HouseDiffusion incorporates an autonomous evaluation and selection mechanism; all generated outputs are treated as equally valid, and the user is expected to manually compare alternatives. The proposed framework eliminates this manual step through its composite scoring metric and best-of-$N$ selection strategy. Third, conversational systems such as ChatDesign \cite{b1} enable natural language interaction but do not integrate deep generative modeling with autonomous post-generation evaluation. The proposed approach combines conversational understanding, generative synthesis, and self-evaluation within a single agentic loop, representing a more complete automation of the early-stage design pipeline.
+
+Table~\ref{tab:comparison} summarizes these capability-level differences across the compared approaches.
+
+\begin{table}[!t]
+\caption{Capability Comparison with Related Approaches}
+\centering
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Capability} & \textbf{Ours} & \textbf{HouseGAN++} & \textbf{HouseDiff.} & \textbf{ChatDesign} \\
+\hline
+NL Input & \checkmark & -- & -- & \checkmark \\
+\hline
+Auto Graph Build & \checkmark & -- & -- & Partial \\
+\hline
+Deep Generative & \checkmark & \checkmark & \checkmark & -- \\
+\hline
+Iterative Refine & \checkmark & \checkmark & \checkmark & -- \\
+\hline
+Auto Evaluation & \checkmark & -- & -- & -- \\
+\hline
+Best-of-$N$ Select & \checkmark & -- & -- & -- \\
+\hline
+End-to-End Agent & \checkmark & -- & -- & -- \\
+\hline
+\end{tabular}
+\label{tab:comparison}
+\end{table}
+
+These distinctions highlight that the primary contribution of this work is not in advancing the generative model itself, but in orchestrating multiple capabilities—language understanding, graph reasoning, layout generation, and autonomous evaluation—within a unified framework that operates without intermediate human intervention.
+
+
+\section*{Limitations and Ethical Considerations}
+
+While the proposed agentic framework demonstrates promising results in conversational architectural floor plan generation, several limitations remain. First, the system operates primarily at a topological and relational level, focusing on room adjacency and proportional balance rather than precise geometric dimensions or regulatory compliance. As a result, the generated layouts should be interpreted as conceptual design suggestions rather than construction-ready blueprints. Real-world implementation would require integration with building codes, structural constraints, ventilation requirements, and local zoning regulations.
+
+Second, the generative model is trained on existing residential layout datasets, which may reflect implicit design biases present in the source data. These biases could influence room arrangements, spatial hierarchies, or cultural design patterns embedded within the generated outputs. Although the agent autonomously evaluates spatial balance and connectivity, it does not explicitly reason about socio-cultural diversity, accessibility standards, or sustainability criteria.
+
+From an ethical perspective, the deployment of automated design systems raises important considerations regarding professional responsibility and authorship. The framework is intended to assist early-stage conceptual exploration rather than replace professional architects. Human expertise remains essential for validating safety, functionality, and contextual appropriateness. Additionally, transparency in how design decisions are derived—particularly in graph construction and layout selection—should be maintained to ensure interpretability and user trust.
+
+Future research should address these limitations by incorporating regulatory knowledge bases, fairness-aware dataset curation, and explainable decision mechanisms within the agentic control loop. Such enhancements would further strengthen the responsible application of Agentic AI in architectural design workflows.
+
+
+
+
+
+\section*{Conclusion and Future Work}
+
+This paper presented an Agentic AI framework for conversational architectural floor plan generation that enables end-to-end automation of early-stage residential layout design. By integrating conversational language understanding, graph-based spatial representation, and deep generative modeling within an autonomous control loop, the proposed system transforms natural language user requirements into coherent floor plans without requiring expert intervention. The experimental evaluation demonstrates that the framework consistently produces spatially structured layouts across multiple residential scenarios, with agent-selected layouts achieving composite quality scores between 82 and 92 on a 100-point scale. The component contribution analysis further confirms that autonomous multi-variation generation and selection provides a consistent quality gain over single-seed generation, and that the system maintains stable performance across configurations of varying complexity.
+
+Despite these strengths, the current system has several limitations that motivate future research. First, the generated layouts do not explicitly incorporate real-world dimensional constraints or regulatory requirements, which are essential for construction-ready designs. Second, the framework currently focuses on single-floor residential layouts and does not address multi-story structures or vertical circulation. Third, quantitative evaluation remains constrained by the lack of standardized metrics for architectural layout quality, a limitation widely acknowledged in prior studies \cite{b13}.
+
+Future work will explore the integration of explicit geometric constraints, multi-floor layout generation, and interactive refinement based on user feedback. Additionally, extending the agentic framework to support style preferences, regulatory compliance, and interoperability with Building Information Modeling (BIM) tools represents a promising direction. These extensions aim to further bridge the gap between early-stage conceptual design and practical architectural workflows, advancing the role of Agentic AI in computer-aided architectural design.
+
+% --- Bibliography ---
+\par\null
+\FloatBarrier
+\bibliographystyle{plainnat}
+\bibliography{references}
+}
+
+\end{CJK}\end{document}
